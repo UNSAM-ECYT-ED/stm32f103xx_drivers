@@ -4,6 +4,11 @@ En este repositorio se encontraran una serie de prototipos de funciones las de d
 Este microcontrolador es el que posee la placa BluePill.
 Los prototipos tienen descripciones los cuales brindan una idea de como deben ser implementados.
 
+# Installing ARM cross-compiler
+
+## Linux
+
+
 
 # Links
 
