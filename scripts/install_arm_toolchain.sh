@@ -5,7 +5,7 @@ ARM_TOOLCHAIN_URL="https://developer.arm.com/-/media/Files/downloads/gnu/12.3.re
 ARM_TOOLCHAIN_FILENAME=arm-gnu-toolchain-12.3.rel1-x86_64-arm-none-eabi.tar.xz
 ARM_TOOLCHAIN_EXTRACT_DIR_NAME="${ARM_TOOLCHAIN_FILENAME%.tar.xz}"
 
-mkdir -p ${HOME}/bin
+mkdir -p ${HOME}/.local/bin
 
 echo "Cleaning pre-existent logical links..."
 rm -rf ${HOME}/bin/arm-none-eabi-*
@@ -21,22 +21,20 @@ echo "Untaring arm toolchain in ${ARM_TOOLCHAIN_INSTALL_DIR}/${ARM_TOOLCHAIN_EXT
 tar -xf ${ARM_TOOLCHAIN_INSTALL_DIR}/${ARM_TOOLCHAIN_FILENAME} -C ${ARM_TOOLCHAIN_INSTALL_DIR}
 
 echo "Making logical links..."
-ln -s ${ARM_TOOLCHAIN_INSTALL_DIR}/${ARM_TOOLCHAIN_EXTRACT_DIR_NAME}/bin/arm-none-eabi-gcc ${HOME}/bin/arm-none-eabi-gcc
-ln -s ${ARM_TOOLCHAIN_INSTALL_DIR}/${ARM_TOOLCHAIN_EXTRACT_DIR_NAME}/bin/arm-none-eabi-ld ${HOME}/bin/arm-none-eabi-ld
-ln -s ${ARM_TOOLCHAIN_INSTALL_DIR}/${ARM_TOOLCHAIN_EXTRACT_DIR_NAME}/bin/arm-none-eabi-objdump ${HOME}/bin/arm-none-eabi-objdump
-ln -s ${ARM_TOOLCHAIN_INSTALL_DIR}/${ARM_TOOLCHAIN_EXTRACT_DIR_NAME}/bin/arm-none-eabi-objcopy ${HOME}/bin/arm-none-eabi-objcopy
-ln -s ${ARM_TOOLCHAIN_INSTALL_DIR}/${ARM_TOOLCHAIN_EXTRACT_DIR_NAME}/bin/arm-none-eabi-size ${HOME}/bin/arm-none-eabi-size
-ln -s ${ARM_TOOLCHAIN_INSTALL_DIR}/${ARM_TOOLCHAIN_EXTRACT_DIR_NAME}/bin/arm-none-eabi-gdb ${HOME}/bin/arm-none-eabi-gdb
+ln -s ${ARM_TOOLCHAIN_INSTALL_DIR}/${ARM_TOOLCHAIN_EXTRACT_DIR_NAME}/bin/arm-none-eabi-gcc      ${HOME}/.local/bin/arm-none-eabi-gcc
+ln -s ${ARM_TOOLCHAIN_INSTALL_DIR}/${ARM_TOOLCHAIN_EXTRACT_DIR_NAME}/bin/arm-none-eabi-ld       ${HOME}/.local/bin/arm-none-eabi-ld
+ln -s ${ARM_TOOLCHAIN_INSTALL_DIR}/${ARM_TOOLCHAIN_EXTRACT_DIR_NAME}/bin/arm-none-eabi-objdump  ${HOME}/.local/bin/arm-none-eabi-objdump
+ln -s ${ARM_TOOLCHAIN_INSTALL_DIR}/${ARM_TOOLCHAIN_EXTRACT_DIR_NAME}/bin/arm-none-eabi-objcopy  ${HOME}/.local/bin/arm-none-eabi-objcopy
+ln -s ${ARM_TOOLCHAIN_INSTALL_DIR}/${ARM_TOOLCHAIN_EXTRACT_DIR_NAME}/bin/arm-none-eabi-size     ${HOME}/.local/bin/arm-none-eabi-size
+ln -s ${ARM_TOOLCHAIN_INSTALL_DIR}/${ARM_TOOLCHAIN_EXTRACT_DIR_NAME}/bin/arm-none-eabi-gdb      ${HOME}/.local/bin/arm-none-eabi-gdb
 
-echo "Adding ${HOME}/bin to the PATH..."
-if grep -Fxq 'PATH=${HOME}/bin:${PATH}' ${HOME}/.bashrc
+if grep -Fxq 'PATH=${HOME}/.local/bin:${PATH}' ${HOME}/.bashrc
 then
-    echo "${HOME}/bin already exists in ${HOME}/.bashrc!"
+    echo "${HOME}/.local/bin already exists in ${HOME}/.bashrc!"
 else
-    echo "Adding \${HOME}/bin to PATH..."
-    echo 'PATH=${HOME}/bin:${PATH}' >> ${HOME}/.bashrc
+    echo "Adding \${HOME}/.local/bin to PATH..."
+    echo 'PATH=${HOME}/.local/bin:${PATH}' >> ${HOME}/.bashrc
+    export PATH=${HOME}/.local/bin:${PATH}
 fi
-
-export PATH=${HOME}/bin:${PATH}
 
 echo "Installation successful"
