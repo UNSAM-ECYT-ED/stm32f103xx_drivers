@@ -105,8 +105,10 @@ st-flash: $(TARGET).bin
 
 debug:
 	@$(DBG) -tui --eval-command="target extended-remote :3333" \
-	--eval-command="layout asm" \
-	--eval-command="layout regs" \
+	--eval-command="layout split" \
+	--eval-command="break main" \
+	--eval-command="monitor reset halt" \
+	--eval-command="jump main" \
 	 $(BUILD_DIR)/$(TARGET)/$(TARGET).elf
 
 ocd-start:
