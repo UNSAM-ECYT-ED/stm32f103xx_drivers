@@ -31,4 +31,6 @@ sudo apt install ./tools/stlink_1.7.0-1_amd64.deb
 
 * [STM32F103C8 microcontroller datasheet](https://www.st.com/en/microcontrollers-microprocessors/stm32f103c8.html)
 
+* [STM32F103C8 reference manual](https://www.st.com/resource/en/reference_manual/rm0008-stm32f101xx-stm32f102xx-stm32f103xx-stm32f105xx-and-stm32f107xx-advanced-armbased-32bit-mcus-stmicroelectronics.pdf)
+
 * [Bluepill development kit](https://stm32-base.org/boards/STM32F103C8T6-Blue-Pill.html)
