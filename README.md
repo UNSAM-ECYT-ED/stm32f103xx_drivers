@@ -27,6 +27,18 @@ Por ejemplo, para sistemas Debian/Ubuntu:
 sudo apt install ./tools/stlink_1.7.0-1_amd64.deb
 ```
 
+# Guia de debugging con OpenOCD y GDB
+
+* En una terminal, dejar corriendo open-ocd:
+```bash
+make ocd-start
+```
+
+* En otra terminal, ejecutar gdb para depurar la ejecucion del programa:
+```bash
+make debug
+```
+
 # Links
 
 * [STM32F103C8 microcontroller datasheet](https://www.st.com/en/microcontrollers-microprocessors/stm32f103c8.html)
