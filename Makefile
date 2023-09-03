@@ -83,25 +83,12 @@ $(DRIVERS_LIB): $(DRIVERS_OBJ)
 %.bin: %.elf
 	$(OBJCOPY) -O binary $(BUILD_DIR)/$(TARGET)/$< $(BUILD_DIR)/$(TARGET)/$@
 
-%.lst: %.elf
-	$(OBJDUMP) -x -S $(BUILD_DIR)/$(TARGET)/$(TARGET).elf \
-		> $(BUILD_DIR)/$(TARGET)/$@
-
 size: $(TARGET).elf
 	$(SIZE) $(BUILD_DIR)/$(TARGET)/$(TARGET).elf
 
-## ST-LINK Stuff
-erase:
-	@st-flash erase
-	@st-flash reset
-
+## Flash and Debug stuff
 ocd-flash : $(TARGET).bin
 	openocd -f openocd.cfg -c "program $(BUILD_DIR)/$(TARGET)/$(TARGET).bin exit 0x08000000 verify reset exit"
-
-st-flash: $(TARGET).bin
-	@st-flash erase
-	st-flash write $(BUILD_DIR)/$(TARGET)/$(TARGET).bin 0x8000000
-	@st-flash reset
 
 debug:
 	@$(DBG) -tui --eval-command="target extended-remote :3333" \
