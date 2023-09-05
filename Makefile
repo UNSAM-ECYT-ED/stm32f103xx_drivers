@@ -53,9 +53,9 @@ DBG = $(CROSS_COMPILE)gdb
 all: clean $(DRIVERS_LIB) $(SRCS) build size
 	@echo "Successfully finished..."
 
-build: $(TARGET).elf $(TARGET).hex $(TARGET).bin $(TARGET).lst
+build: $(TARGET).elf $(TARGET).hex $(TARGET).bin
 
-$(TARGET).elf: $(OBJS)
+$(TARGET).elf: $(OBJS) $(DRIVERS_LIB)
 	@echo "Building application elf: "\
 		"$(addprefix $(BUILD_DIR)/, $(OBJS)) -> $(BUILD_DIR)/$@..."
 	@mkdir -p $(BUILD_DIR)/$(TARGET)
