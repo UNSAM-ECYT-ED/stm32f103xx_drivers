@@ -35,34 +35,42 @@ Por lo tanto, con la heramienta `arm-none-eabi-gcc`, "borramos" toda la informac
 
 ## Instalacion en Linux :heart:
 
-### ARM Toolchain
-La catedra creo un script de conveniencia para poder instalar el toolchain de manera rapida y sencilla.
-Este script descarga e instala el toolchain.
-Para ejecutarlo se debe realizar lo siguiente en una terminal, estando ubicado en la raiz de este repositorio:
-```bash
-./scripts/install_arm_toolchain.sh
-```
+### ARM Toolchain y OpenOCD
 
-Luego de ejecutar el script, salir y entrar de la terminal y verificar si el toolchain es encontrado ejecutando `arm-none-eabi-gcc` en la terminal.
+La catedra creo un script de conveniencia para poder instalar el toolchain de ARM y OpenOCD de manera rapida y sencilla.
+Desde la raiz de este repositorio ejecutar lo siguiente:
+```bash
+./scripts/install_tools.sh
+```
+Luego de ejecutar el script, salir y entrar de la terminal y verificar si:
+* el toolchain es encontrado ejecutando `arm-none-eabi-gcc` en la terminal.
+* OpenOCD es encontrado ejecutando `openocd` en la terminal.
 
 ### ST-LINK
-En este repositorio se encuentra un paquete deb con un release de la herramienta.
-Se puede instalar el mismo con el manejador de paquetes de la distribucion utilizada.
-Por ejemplo, para sistemas Debian/Ubuntu:
+
+Para instalar el software necesario para utilizar el programador (ST-LINK), se utilizara el administrador de paquetes de la distribucion utilizada. Desde la raiz de este repositorio ejecutar lo siguiente:
 ```bash
 sudo apt install ./tools/stlink_1.7.0-1_amd64.deb
 ```
 
-### OpenOCD
-La catedra creo un script de conveniencia para poder instalar openocd de manera rapida y sencilla.
-Este script descarga e instala openocd.
-Para ejecutarlo se debe realizar lo siguiente en una terminal, estando ubicado en la raiz de este repositorio:
-```bash
-./scripts/install_openocd.sh
-```
-
-Luego de ejecutar el script, salir y entrar de la terminal y verificar si openocd es encontrado ejecutando `openocd` en la terminal.
-
 ## Instalacion en Windows :poop:
 
-TODO
+### ARM Toolchain, OpenOCD y herramientas de GNU
+Para poder instalar las herramientas en Windows, utilizaremos el manejador de paquetes [Chocolatey](https://chocolatey.org/install). Chocolatey funciona como el `apt-get` de Ubuntu, podremos descargar paquetes por consola.
+
+Para instalarlo, seguir la guia de instalacion (Install Chocolatey for Individual Use) en la web de Cocolatey: https://chocolatey.org/install#individual.
+
+La catedra tambien creo un script de conveniencia para instalar casi todas las herramientas usando Chocolatey. Para instalarlas, realizar lo siguiente:
+
+1) Abrir una terminal **como administrador**.
+2) Dentro del a terminal, ubicarse sobre la raiz de este repositorio utilizando el commando `cd`.
+3) Ejecutar el script de instalacion:
+```
+.\scripts\install_tools.bat
+```
+
+### ST-LINK
+
+Para utilizar el programador del microcontrolador STM32 deben ser descargados los drivers para el mismo. Estos se encuentran en la pagina oficial de STMicroelectronics: https://www.st.com/en/development-tools/stsw-link004.html#get-software
+
+
