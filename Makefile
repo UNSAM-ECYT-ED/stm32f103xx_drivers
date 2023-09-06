@@ -1,10 +1,19 @@
 TARGET ?= blink
 
 # Detect if we are in Windows or in Linux
+# Stuff about dir separators: http://skramm.blogspot.com/2013/04/writing-portable-makefiles.html 
 ifeq ($(OS),Windows_NT)
 	RMDIR := rd /s /q
+	MKDIR := mkdir
+	DS := \\
+	ODS := /
+	NULL := nul
 else
 	RMDIR := rm -rf
+	MKDIR := mkdir -p
+	DS := /
+	ODS := \\
+	NULL := /dev/null
 endif
 
 BUILD_DIR = build
@@ -17,7 +26,7 @@ DRIVERS_LIB := libdrivers.a
 
 # Select sources
 TARGETS_DIR = apps
-SRCS = $(TARGETS_DIR)/$(TARGET)/main.c
+SRCS = $(TARGETS_DIR)$(DS)$(TARGET)$(DS)main.c
 #SRCS += $(DRIVERS_SRC)
 
 # Create object files names
@@ -63,12 +72,12 @@ all: clean $(DRIVERS_LIB) $(SRCS) build size
 build: $(BUILD_DIR) $(TARGET).elf $(TARGET).hex $(TARGET).bin
 
 $(BUILD_DIR):
-	@mkdir -p $(BUILD_DIR)
+	-$(MKDIR) $(BUILD_DIR) 2>$(NULL)
 
 $(TARGET).elf: $(OBJS) $(DRIVERS_LIB)
 	@echo "Building application elf: "\
 		"$(addprefix $(BUILD_DIR)/, $(OBJS)) -> $(BUILD_DIR)/$@..."
-	@mkdir -p $(BUILD_DIR)/$(TARGET)
+	-$(MKDIR) $(BUILD_DIR)$(DS)$(TARGET) 2>$(NULL)
 	$(CC) $(addprefix $(BUILD_DIR)/, $(OBJS)) $(LDFLAGS) $(INCLUDES) \
 		-o $(BUILD_DIR)/$(TARGET)/$@ \
 		$(BUILD_DIR)/$(DRIVERS_LIB)
@@ -84,7 +93,7 @@ $(DRIVERS_LIB): $(DRIVERS_OBJ)
 ## Auto-rules to compile stuff
 %.o: %.c
 	@echo "Building $<\t($< -> $@)."
-	@mkdir -p $(BUILD_DIR)/$(dir $@)
+	-$(MKDIR) $(BUILD_DIR)$(DS)$(subst $(ODS),$(DS),$(dir $@)) 2>$(NULL)
 	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $(BUILD_DIR)/$@
 
 %.hex: %.elf
@@ -113,6 +122,4 @@ ocd-start:
 
 clean:
 	@echo "Cleaning..."
-	-$(RMDIR) $(BUILD_DIR)
-
-
+	-$(RMDIR) $(BUILD_DIR) 2>$(NULL)
