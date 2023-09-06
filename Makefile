@@ -1,5 +1,12 @@
 TARGET ?= blink
 
+# Detect if we are in Windows or in Linux
+ifeq ($(OS),Windows_NT)
+	RMDIR := rd /s /q
+else
+	RMDIR := rm -rf
+endif
+
 BUILD_DIR = build
 
 # Stuff to compile drivers static library
@@ -53,7 +60,10 @@ DBG = $(CROSS_COMPILE)gdb
 all: clean $(DRIVERS_LIB) $(SRCS) build size
 	@echo "Successfully finished..."
 
-build: $(TARGET).elf $(TARGET).hex $(TARGET).bin
+build: $(BUILD_DIR) $(TARGET).elf $(TARGET).hex $(TARGET).bin
+
+$(BUILD_DIR):
+	@mkdir -p $(BUILD_DIR)
 
 $(TARGET).elf: $(OBJS) $(DRIVERS_LIB)
 	@echo "Building application elf: "\
@@ -86,8 +96,8 @@ $(DRIVERS_LIB): $(DRIVERS_OBJ)
 size: $(TARGET).elf
 	$(SIZE) $(BUILD_DIR)/$(TARGET)/$(TARGET).elf
 
-## Flash and Debug stuff
-ocd-flash : $(TARGET).bin
+## Flash and Debug stuff (run build previouslly)
+ocd-flash : build
 	openocd -f openocd.cfg -c "program $(BUILD_DIR)/$(TARGET)/$(TARGET).bin exit 0x08000000 verify reset exit"
 
 debug:
@@ -103,7 +113,6 @@ ocd-start:
 
 clean:
 	@echo "Cleaning..."
-	@rm -rf $(BUILD_DIR)/
-	@mkdir $(BUILD_DIR)/
+	-$(RMDIR) $(BUILD_DIR)
 
 
