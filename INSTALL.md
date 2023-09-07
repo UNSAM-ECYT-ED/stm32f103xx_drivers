@@ -69,8 +69,31 @@ La catedra tambien creo un script de conveniencia para instalar casi todas las h
 .\scripts\install_tools.bat
 ```
 
-### ST-LINK
+### W-ST-LINK
 
 Para utilizar el programador del microcontrolador STM32 deben ser descargados los drivers para el mismo. Estos se encuentran en la pagina oficial de STMicroelectronics: https://www.st.com/en/development-tools/stsw-link004.html#get-software
 
 
+### Guia de resolucion de problemas
+
+#### LIBUSB_ERROR_NOT_SUPPORTED
+
+En el caso de que al ejecutar `make ocd-flash` se vea el siguiente error:
+
+<p align="center">
+    <img width="100%" src="img/libusb_error_not_supported_windows.png" alt="LIBUSB_ERROR_NOT_SUPPORTED">
+</p>
+
+El error se debe a que no se instalaron los drivers del programador! Se puede confirmar esto yendo al administrador de dispositivos y viendo que aparece un signo de advertencia en el dispositivo `STM32 STLink`:
+
+<p align="center">
+    <img width="50%" src="img/stlink_not_installed_windows.png" alt="ST-LINK not installed">
+</p>
+
+Para solucionarlo, simplemente instalar el driver como se indica en la seccion de instalacion del ST-LINK en Windows.
+
+Al terminar de instalarlo, abrir de vuelta el administrador de dispositivos y deberia visualizarse el dispositivo sin un signo de advertencia.
+
+<p align="center">
+    <img width="50%" src="img/stlink_installed_windows.png" alt="ST-LINK installed">
+</p>
