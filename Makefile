@@ -120,6 +120,10 @@ debug:
 ocd-start:
 	openocd -f openocd.cfg
 
+disassembly:
+	@echo "Generating the disassembly of ${TARGET}.bin (output in ${BUILD_DIR}/${TARGET}/${TARGET}.dat)"
+	arm-none-eabi-objdump -D -b binary -marm ${BUILD_DIR}/${TARGET}/${TARGET}.bin > ${BUILD_DIR}/${TARGET}/${TARGET}.dat
+
 clean:
 	@echo "Cleaning..."
 	-$(RMDIR) $(BUILD_DIR) 2>$(NULL)
