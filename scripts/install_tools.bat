@@ -1,11 +1,7 @@
 @set CHOCO_COMMON_FLAGS=-y 
 
 @echo "Uninstalling previous versions..."
-choco uninstall make openocd-xpack gcc-arm-embedded^
-    git --yes --no-color
-
-@echo "Installing Git..."
-choco install git %CHOCO_COMMON_FLAGS%
+choco uninstall make openocd-xpack gcc-arm-embedded --yes --no-color
 
 @echo "Installing Make..."
 choco install make %CHOCO_COMMON_FLAGS%^

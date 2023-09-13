@@ -35,44 +35,83 @@ Por lo tanto, con la heramienta `arm-none-eabi-gcc`, "borramos" toda la informac
 
 ## Instalacion en Linux :heart:
 
-### ARM Toolchain y OpenOCD
+La guia supone que se esta utilizando Ubuntu, en el caso de que se este utilizando otra distribucion, cambiar los respectivos llamados al manejador de paquetes `apt` con el correspondiente a su distribucion.
 
-La catedra creo un script de conveniencia para poder instalar el toolchain de ARM y OpenOCD de manera rapida y sencilla.
-Desde la raiz de este repositorio ejecutar lo siguiente:
+1. **Instalacion de git**: para poder clonarse el repositorio, instalar git. Para ello, abrir una terminal y ejecutar el siguiente comando.
+
 ```bash
+sudo apt update -y && sudo apt install -y git
+```
+
+2. **Clonar el repositorio**: En la terminal clonar el repositorio utilizando:
+
+```bash
+git clone
+```
+
+3. **Instalacion de ARM Toolchain y OpenOCD**: En la terminal dirigirse al directorio del repositorio y ejecutar el script `install_tools.sh`.
+
+```bash
+cd stm32f103xx_drivers
 ./scripts/install_tools.sh
 ```
-Luego de ejecutar el script, salir y entrar de la terminal y verificar si:
-* el toolchain es encontrado ejecutando `arm-none-eabi-gcc` en la terminal.
-* OpenOCD es encontrado ejecutando `openocd` en la terminal.
 
-### ST-LINK
-
-Para instalar el software necesario para utilizar el programador (ST-LINK), se utilizara el administrador de paquetes de la distribucion utilizada. Desde la raiz de este repositorio ejecutar lo siguiente:
+4. **ST-LINK**: Para instalar el software necesario para utilizar el programador (ST-LINK), se utilizara el administrador de paquetes de la distribucion utilizada. Desde la raiz de este repositorio ejecutar lo siguiente:
 ```bash
 sudo apt install ./tools/stlink_1.7.0-1_amd64.deb
 ```
 
 ## Instalacion en Windows :poop:
 
-### ARM Toolchain, OpenOCD y herramientas de GNU
-Para poder instalar las herramientas en Windows, utilizaremos el manejador de paquetes [Chocolatey](https://chocolatey.org/install). Chocolatey funciona como el `apt-get` de Ubuntu, podremos descargar paquetes por consola.
+1. **Instalacion de Chocolatey**: para poder instalar las herramientas en Windows, utilizaremos el manejador de paquetes [Chocolatey](https://chocolatey.org/install). Chocolatey funciona como el `apt-get` de Ubuntu, con el podremos descargar paquetes por consola. Para instalarlo, seguir la guia de instalacion (Install Chocolatey for Individual Use) en la web de Cocolatey: https://chocolatey.org/install#individual.
 
-Para instalarlo, seguir la guia de instalacion (Install Chocolatey for Individual Use) en la web de Cocolatey: https://chocolatey.org/install#individual.
+2. **Instalacion de Git**: Abrir un `command prompt` (terminal) **como administrador** y ejecutar el siguiente comando para instalar git.
 
-La catedra tambien creo un script de conveniencia para instalar casi todas las herramientas usando Chocolatey. Para instalarlas, realizar lo siguiente:
-
-1) Abrir una terminal **como administrador**.
-2) Dentro del a terminal, ubicarse sobre la raiz de este repositorio utilizando el commando `cd`.
-3) Ejecutar el script de instalacion:
+```bash
+choco install git
 ```
+
+3. **Clonar el repositorio**: En el `command prompt` de administrador clonar el repositorio utilizando:
+
+```bash
+git clone
+```
+
+4. **Instalacion de ARM Toolchain, OpenOCD y herramientas de GNU**: En el `command prompt` de administrador dirigirse al directorio del repositorio y ejecutar el script `install_tools.bat`.
+
+```bash
+cd stm32f103xx_drivers
 .\scripts\install_tools.bat
 ```
 
-### W-ST-LINK
+5. **ST-LINK**: Para utilizar el programador del microcontrolador STM32 deben ser descargados los drivers para el mismo. Estos se encuentran en la pagina oficial de STMicroelectronics: https://www.st.com/en/development-tools/stsw-link004.html#get-software
 
-Para utilizar el programador del microcontrolador STM32 deben ser descargados los drivers para el mismo. Estos se encuentran en la pagina oficial de STMicroelectronics: https://www.st.com/en/development-tools/stsw-link004.html#get-software
+## Verificar si la instalacion fue correcta
 
+Luego de haber seguido los pasos de instalacion, realizar lo siguiente para verificar que todo se haya instalado correctamente.
+
+1. **Verificacion del toolchain de ARM**: Abrir una terminal y verificar si el toolchain de ARM es encontrado en el PATH ejecutando el comando `arm-none-eabi-gcc`.
+Si es contrado correctamente, algo similar a lo siguiente se deberia ver en la terminal:
+
+<p align="center">
+    <img width="80%" src="img/arm-none-eab-gcc-installed-ok.png" alt="arm-none-eabi-gcc-installed-ok">
+</p>
+
+Nota: El mensaje `fatal error: no input files` es esperable, dado que no le estamos indicando ningun codigo fuente al compilador.
+
+2. **Verificacion de OpenOCD**: En la terminal, verificar si OpenOCD es encontrado en el PATH ejecutando el comando `openocd`.
+Si es contrado correctamente, algo similar a lo siguiente se deberia ver en la terminal:
+
+<p align="center">
+    <img width="80%" src="img/openocd-installed-ok.png" alt="openocd-installed-ok">
+</p>
+
+3. **Verificacion del driver ST-LINK**: Conectar el programador ST-LINK a la PC y a la placa BluePill (revisar el conexionado de la interfaz SWD y la alimentacion). Luego, en la terminal, ir al directorio raiz de este repositorio y ejecutar el comando `make ocd-flash TARGET=blink`.
+Este comando deberia compilar y flashear en el el procesador de la placa BluePill una aplicacion que parpadea su led.
+
+<p align="center">
+    <img width="100%" src="img/stlink-installed-ok.png" alt="stlink-installed-ok">
+</p>
 
 ### Guia de resolucion de problemas
 
