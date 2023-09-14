@@ -4,7 +4,7 @@ La guia se divide en dos, dependiendo si su sistema operativo es Linux (:heart:)
 
 ## Descripcion de las Herramientas
 
-### ARM Toolchain
+### Toolchain de ARM
 Cuando nosotros compilamos un programa con `gcc`, lo estamos compilando para correr en una arquitectura como la de nuestro PC (x86_x64).
 En particular, la version 11.4.0 de `gcc` para Ubuntu soporta las siguientes arquitecturas: 
 ```bash
@@ -33,6 +33,57 @@ El linker produce un archivo `.elf` que tiene mucha informacion ademas de las in
 El microcontrolador no necesita esto para poder operar, solo necesita las instrucciones crudas.
 Por lo tanto, con la heramienta `arm-none-eabi-gcc`, "borramos" toda la informacion extra para dejar solo un binario que posea las instrucciones que debe ejecutar el microcontrolador.
 
+## Instalacion en Windows :poop:
+
+1. **Instalacion de Chocolatey**: para poder instalar las herramientas en Windows, utilizaremos el manejador de paquetes [Chocolatey](https://chocolatey.org/install). Chocolatey funciona como el `apt-get` de Ubuntu, con el podremos descargar paquetes por consola. Para instalarlo, seguir la guia de instalacion (Install Chocolatey for Individual Use) en la web de Cocolatey: https://chocolatey.org/install#individual.
+
+2. **Instalacion de Git**: Abrir un `command prompt` (terminal) **como administrador** y ejecutar el siguiente comando para instalar git.
+
+```bash
+choco install git --yes
+```
+
+Al ejecutar esto, se deberá ver algo como lo siguiente en pantalla:
+
+<p align="center">
+    <img width="50%" src="img/windows-git-installing-terminal.png" alt="windows-git-installing-terminal">
+</p>
+
+Nota: la descarga e instalación del paquete puede tardar aproximadamente entre 3 y 5 minutos, dependiendo de la velocidad de bajada que posea la PC.
+
+3. **Clonar el repositorio**: En el `command prompt` de administrador clonar este repositorio.
+Primero, recuerden cambiar de directorio a donde quieren que el repo sea clonado.
+Es decir, cambien el string **REPOSITORY_PATH** del siguiente comando por la direccion que quieran, por ejemplo: `C:\Users\JnRod\Documents\EDII` (recuerden no utilizar nombres de directorios con espacios).
+
+```bash
+cd REPOSITORY_PATH
+git clone https://github.com/UNSAM-ECYT-ED/stm32f103xx_drivers.git
+```
+
+Al ejecutar esto, se deberá ver algo como lo siguiente en pantalla:
+<p align="center">
+    <img width="80%" src="img/windows-cloning-repository.png" alt="windows-cloning-repository">
+</p>
+
+4. **Instalacion del toolchain de ARM, OpenOCD y herramientas de GNU**: En el `command prompt` de administrador dirigirse al directorio del repositorio y ejecutar el script `install_tools.bat`.
+
+```bash
+cd stm32f103xx_drivers
+.\scripts\install_tools.bat
+```
+
+Durante la ejecución del script, se debería ver algo como lo siguiente en pantalla:
+<p align="center">
+    <img width="100%" src="img/windows-executing-installing-script.png" alt="windows-executing-installing-script">
+</p>
+
+Nota 1: la ejecución del script puede tardar entre 15 y 20 min, dependiendo de la velocidad de bajada que posea la PC.
+
+Nota 2: Si la instalacion se cuelga en algun porcentaje, clickear la terminal y presionar a tecla "ENTER". A veces windows se cuelga, es una de las razonas por las cuales lo detestamos.
+
+5. **ST-LINK**: Para utilizar el programador del microcontrolador STM32 deben ser descargados los drivers para el mismo. Estos se encuentran en la pagina oficial de STMicroelectronics: https://www.st.com/en/development-tools/stsw-link004.html#get-software
+
+
 ## Instalacion en Linux :heart:
 
 La guia supone que se esta utilizando Ubuntu, en el caso de que se este utilizando otra distribucion, cambiar los respectivos llamados al manejador de paquetes `apt` con el correspondiente a su distribucion.
@@ -46,10 +97,10 @@ sudo apt update -y && sudo apt install -y git
 2. **Clonar el repositorio**: En la terminal clonar el repositorio utilizando:
 
 ```bash
-git clone
+git clone https://github.com/UNSAM-ECYT-ED/stm32f103xx_drivers.git
 ```
 
-3. **Instalacion de ARM Toolchain y OpenOCD**: En la terminal dirigirse al directorio del repositorio y ejecutar el script `install_tools.sh`.
+3. **Instalacion del toolchain de ARM y OpenOCD**: En la terminal dirigirse al directorio del repositorio y ejecutar el script `install_tools.sh`.
 
 ```bash
 cd stm32f103xx_drivers
@@ -60,31 +111,6 @@ cd stm32f103xx_drivers
 ```bash
 sudo apt install ./tools/stlink_1.7.0-1_amd64.deb
 ```
-
-## Instalacion en Windows :poop:
-
-1. **Instalacion de Chocolatey**: para poder instalar las herramientas en Windows, utilizaremos el manejador de paquetes [Chocolatey](https://chocolatey.org/install). Chocolatey funciona como el `apt-get` de Ubuntu, con el podremos descargar paquetes por consola. Para instalarlo, seguir la guia de instalacion (Install Chocolatey for Individual Use) en la web de Cocolatey: https://chocolatey.org/install#individual.
-
-2. **Instalacion de Git**: Abrir un `command prompt` (terminal) **como administrador** y ejecutar el siguiente comando para instalar git.
-
-```bash
-choco install git
-```
-
-3. **Clonar el repositorio**: En el `command prompt` de administrador clonar el repositorio utilizando:
-
-```bash
-git clone
-```
-
-4. **Instalacion de ARM Toolchain, OpenOCD y herramientas de GNU**: En el `command prompt` de administrador dirigirse al directorio del repositorio y ejecutar el script `install_tools.bat`.
-
-```bash
-cd stm32f103xx_drivers
-.\scripts\install_tools.bat
-```
-
-5. **ST-LINK**: Para utilizar el programador del microcontrolador STM32 deben ser descargados los drivers para el mismo. Estos se encuentran en la pagina oficial de STMicroelectronics: https://www.st.com/en/development-tools/stsw-link004.html#get-software
 
 ## Verificar si la instalacion fue correcta
 
