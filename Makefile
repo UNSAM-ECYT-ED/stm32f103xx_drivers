@@ -1,5 +1,21 @@
 TARGET ?= blink
 
+# Detect if we are in Windows or in Linux
+# Stuff about dir separators: http://skramm.blogspot.com/2013/04/writing-portable-makefiles.html 
+ifeq ($(OS),Windows_NT)
+	RMDIR := rd /s /q
+	MKDIR := mkdir
+	DS := \\
+	ODS := /
+	NULL := nul
+else
+	RMDIR := rm -rf
+	MKDIR := mkdir -p
+	DS := /
+	ODS := \\
+	NULL := /dev/null
+endif
+
 BUILD_DIR = build
 
 # Stuff to compile drivers static library
@@ -10,7 +26,7 @@ DRIVERS_LIB := libdrivers.a
 
 # Select sources
 TARGETS_DIR = apps
-SRCS = $(TARGETS_DIR)/$(TARGET)/main.c
+SRCS = $(TARGETS_DIR)$(DS)$(TARGET)$(DS)main.c
 #SRCS += $(DRIVERS_SRC)
 
 # Create object files names
@@ -53,12 +69,15 @@ DBG = $(CROSS_COMPILE)gdb
 all: clean $(DRIVERS_LIB) $(SRCS) build size
 	@echo "Successfully finished..."
 
-build: $(TARGET).elf $(TARGET).hex $(TARGET).bin $(TARGET).lst
+build: $(BUILD_DIR) $(TARGET).elf $(TARGET).hex $(TARGET).bin
 
-$(TARGET).elf: $(OBJS)
+$(BUILD_DIR):
+	-$(MKDIR) $(BUILD_DIR) 2>$(NULL)
+
+$(TARGET).elf: $(OBJS) $(DRIVERS_LIB)
 	@echo "Building application elf: "\
 		"$(addprefix $(BUILD_DIR)/, $(OBJS)) -> $(BUILD_DIR)/$@..."
-	@mkdir -p $(BUILD_DIR)/$(TARGET)
+	-$(MKDIR) $(BUILD_DIR)$(DS)$(TARGET) 2>$(NULL)
 	$(CC) $(addprefix $(BUILD_DIR)/, $(OBJS)) $(LDFLAGS) $(INCLUDES) \
 		-o $(BUILD_DIR)/$(TARGET)/$@ \
 		$(BUILD_DIR)/$(DRIVERS_LIB)
@@ -74,7 +93,7 @@ $(DRIVERS_LIB): $(DRIVERS_OBJ)
 ## Auto-rules to compile stuff
 %.o: %.c
 	@echo "Building $<\t($< -> $@)."
-	@mkdir -p $(BUILD_DIR)/$(dir $@)
+	-$(MKDIR) $(BUILD_DIR)$(DS)$(subst $(ODS),$(DS),$(dir $@)) 2>$(NULL)
 	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $(BUILD_DIR)/$@
 
 %.hex: %.elf
@@ -83,25 +102,12 @@ $(DRIVERS_LIB): $(DRIVERS_OBJ)
 %.bin: %.elf
 	$(OBJCOPY) -O binary $(BUILD_DIR)/$(TARGET)/$< $(BUILD_DIR)/$(TARGET)/$@
 
-%.lst: %.elf
-	$(OBJDUMP) -x -S $(BUILD_DIR)/$(TARGET)/$(TARGET).elf \
-		> $(BUILD_DIR)/$(TARGET)/$@
-
 size: $(TARGET).elf
 	$(SIZE) $(BUILD_DIR)/$(TARGET)/$(TARGET).elf
 
-## ST-LINK Stuff
-erase:
-	@st-flash erase
-	@st-flash reset
-
-ocd-flash : $(TARGET).bin
+## Flash and Debug stuff (run build previouslly)
+ocd-flash : build
 	openocd -f openocd.cfg -c "program $(BUILD_DIR)/$(TARGET)/$(TARGET).bin exit 0x08000000 verify reset exit"
-
-st-flash: $(TARGET).bin
-	@st-flash erase
-	st-flash write $(BUILD_DIR)/$(TARGET)/$(TARGET).bin 0x8000000
-	@st-flash reset
 
 debug:
 	@$(DBG) -tui --eval-command="target extended-remote :3333" \
@@ -114,9 +120,10 @@ debug:
 ocd-start:
 	openocd -f openocd.cfg
 
+disassembly:
+	@echo "Generating the disassembly of ${TARGET}.elf (output in ${BUILD_DIR}/${TARGET}/${TARGET}.dat)"
+	arm-none-eabi-objdump --disassemble-all ${BUILD_DIR}/${TARGET}/${TARGET}.elf > ${BUILD_DIR}/${TARGET}/${TARGET}.dat
+
 clean:
 	@echo "Cleaning..."
-	@rm -rf $(BUILD_DIR)/
-	@mkdir $(BUILD_DIR)/
-
-
+	-$(RMDIR) $(BUILD_DIR) 2>$(NULL)

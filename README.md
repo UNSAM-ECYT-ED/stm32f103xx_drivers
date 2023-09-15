@@ -3,31 +3,47 @@ En este repositorio se encontraran una serie de prototipos de funciones las de d
 Este microcontrolador es el que posee la placa BluePill.
 Los prototipos tienen descripciones los cuales brindan una idea de como deben ser implementados.
 
+# Estructura del codigo fuente
+
+El codigo fuente se encuentra dividido en dos partes: aplicaciones (`apps`) y drivers (`drivers`).
+
+El objetivo de esta separacion es abstraer a la logica de negocios de las aplicaciones de la interaccion con el microcontrolador a bajo nivel. Por ejemplo, en la aplicacion `blink` solo se encuentra un main que llama periodicamente a funciones del estilo `gpio_toggle()`, las cuales estan implementadas en el módulo `gpio` de la libreria drivers.
+
+<p align="center">
+    <img width="80%" src="img/source_code_organization.png" alt="Source code organization">
+</p>
+
+## Aplicaciones
+Las `apps` poseen la logica particular del programa.
+Cada aplicacion tiene su propio `main` y hace uso de funciones encontradas en los `drivers`. Por ejemplo, la aplicacion `blink` tiene un programa en el cual el microcontrolador `togglea` el valor de un GPIO periodicamente.
+
+Cada aplicacion tiene su sub-directorio en el directorio `apps`. Por ejemplo, el codigo fuente de la aplicacion `blink` se encuentra en `apps/blink/main.c`. Si fueramos a agregar otra aplicacion llamada `i2c_comm`, su respectivo codigo fuente se deberia encontrar en `apps/i2c_comm/main.c`.
+
+## Drivers
+Los `drivers` son un conjunto de modulos que componen una libreria. La idea es que esta libreria posea codigo que sirva para interactuar con los registros del microcontrolador.
+Cada modulo de esta libreria posee un archivo publico (`.h`) y otro privado (`.c`).
+Los archivos publicos son los incluidos por las aplicaciones y poseen los prototipos de las funciones. 
+Por otro lado, los archivos privados poseen las implementaciones de las funciones.
+
+
 # Guia de instalacion de herramientas
-En las siguientes secciones se encontraran instrucciones para instalar las herramientas necesarias para compilar un programa para el microcontrolador y para flashear el mismo.
+Para instalar las herramientas necesarias para compilar y depurar codigo en su PC, por favor siga las instrucciones encontradas en [INSTALL.md](INSTALL.md).
 
-## Toolchain de ARM
-Este set de herramientas es necesario para compilar un programa en nuestra PC para que pueda correrse en el microcontrolador.
+# Compilacion
 
-### Linux
-La catedra creo un script de conveniencia para poder instalar el toolchain de manera rapida y sencilla.
-Este script descargara e instalara el toolchain.
-Para ejecutarlo realizar lo siguiente en una terminal, estando ubicado en la raiz de este repositorio:
+Para compilar una aplicacion, ejecutar lo siguiente en una terminal:
 ```bash
-./scripts/install_arm_toolchain.sh
-```
-## ST-LINK
-Las herramientas `STLINK` permiten flashear el microcontrolador, accediendo a la memoria del mismo. 
-
-### Linux
-En este repositorio se encuentra un paquete deb con un release de la herramienta.
-Se puede instalar el mismo con el manejador de paquetes de la distribucion utilizada.
-Por ejemplo, para sistemas Debian/Ubuntu:
-```bash
-sudo apt install ./tools/stlink_1.7.0-1_amd64.deb
+make build
 ```
 
-# Guia de debugging con OpenOCD y GDB
+# Grabar aplicacion en microcontrolador con OpenOCD
+
+Para grabar una aplicacion (un binario) en el microcontrolador, ejecutar lo siguiente en una terminal:
+```bash
+make ocd-flash
+```
+
+# Debugging con OpenOCD y GDB
 
 * En una terminal, dejar corriendo open-ocd:
 ```bash
