@@ -121,8 +121,8 @@ ocd-start:
 	openocd -f openocd.cfg
 
 disassembly:
-	@echo "Generating the disassembly of ${TARGET}.bin (output in ${BUILD_DIR}/${TARGET}/${TARGET}.dat)"
-	arm-none-eabi-objdump -D -b binary -marm ${BUILD_DIR}/${TARGET}/${TARGET}.bin > ${BUILD_DIR}/${TARGET}/${TARGET}.dat
+	@echo "Generating the disassembly of ${TARGET}.elf (output in ${BUILD_DIR}/${TARGET}/${TARGET}.dat)"
+	arm-none-eabi-objdump --disassemble-all ${BUILD_DIR}/${TARGET}/${TARGET}.elf > ${BUILD_DIR}/${TARGET}/${TARGET}.dat
 
 clean:
 	@echo "Cleaning..."
