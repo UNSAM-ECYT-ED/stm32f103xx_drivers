@@ -61,4 +61,6 @@ make debug
 
 * [STM32F103C8 reference manual](https://www.st.com/resource/en/reference_manual/rm0008-stm32f101xx-stm32f102xx-stm32f103xx-stm32f105xx-and-stm32f107xx-advanced-armbased-32bit-mcus-stmicroelectronics.pdf)
 
+* [STM32F1xx Cortex-M3 programming manual](https://www.st.com/content/ccc/resource/technical/document/programming_manual/5b/ca/8d/83/56/7f/40/08/CD00228163.pdf/files/CD00228163.pdf/jcr:content/translations/en.CD00228163.pdf)
+
 * [Bluepill development kit](https://stm32-base.org/boards/STM32F103C8T6-Blue-Pill.html)

@@ -8,6 +8,10 @@
 
 #include "stm32f103x8.h"
 
+/*-- Macros & constants ------------------------------------------------------*/
+#define SYSTEM_EXT_OSC_FREQ_HZ (8000000ul)    /* BluePill external oscillator. */
+
+/*-- Private types declaration -----------------------------------------------*/
 /*! Flash wait states that can be set. */
 enum
 {
@@ -20,35 +24,35 @@ enum
 /*! AHB prescaler values that can be used. */
 enum
 {
-    SYSTEM_AHB_PRESCALER_1 =    0,
-    SYSTEM_AHB_PRESCALER_2 =    0b1000,
-    SYSTEM_AHB_PRESCALER_4 =    0b1001,
-    SYSTEM_AHB_PRESCALER_8 =    0b1010,
-    SYSTEM_AHB_PRESCALER_16 =   0b1011,
-    SYSTEM_AHB_PRESCALER_64 =   0b1100,
-    SYSTEM_AHB_PRESCALER_128 =  0b1101,
-    SYSTEM_AHB_PRESCALER_256 =  0b1110,
-    SYSTEM_AHB_PRESCALER_512 =  0b1111,
-    SYSTEM_AHB_PRESCALER_MAX =  0b1111
+    SYSTEM_AHB_PRESCALER_DIV1 =    0,
+    SYSTEM_AHB_PRESCALER_DIV2 =    0x8, //0b1000
+    SYSTEM_AHB_PRESCALER_DIV4 =    0x9, //0b1001
+    SYSTEM_AHB_PRESCALER_DIV8 =    0xA, //0b1010
+    SYSTEM_AHB_PRESCALER_DIV16 =   0xB, //0b1011
+    SYSTEM_AHB_PRESCALER_DIV64 =   0xC, //0b1100
+    SYSTEM_AHB_PRESCALER_DIV128 =  0xD, //0b1101
+    SYSTEM_AHB_PRESCALER_DIV256 =  0xE, //0b1110
+    SYSTEM_AHB_PRESCALER_DIV512 =  0xF, //0b1111
+    SYSTEM_AHB_PRESCALER_DIVMAX =  0xF, //0b1111
 };
 
 /*! APB1 prescaler values that can be used. */
 enum
 {
-    SYSTEM_APB1_PRESCALER_1 =    0,
-    SYSTEM_APB1_PRESCALER_2 =    0b100,
-    SYSTEM_APB1_PRESCALER_4 =    0b101,
-    SYSTEM_APB1_PRESCALER_8 =    0b110,
-    SYSTEM_APB1_PRESCALER_16 =   0b111,
-    SYSTEM_APB1_PRESCALER_MAX =  0b111
+    SYSTEM_APB1_PRESCALER_DIV1 =    0,
+    SYSTEM_APB1_PRESCALER_DIV2 =    0x4,    //0b100
+    SYSTEM_APB1_PRESCALER_DIV4 =    0x5,    //0b101
+    SYSTEM_APB1_PRESCALER_DIV8 =    0x6,    //0b110
+    SYSTEM_APB1_PRESCALER_DIV16 =   0x7,    //0b111
+    SYSTEM_APB1_PRESCALER_DIVMAX =  0x7     //0b111
 };
 
 /*! HSE prescaler values that can be used. */
 enum
 {
-    SYSTEM_HSE_PRESCALER_1 =    0,
-    SYSTEM_HSE_PRESCALER_0P5,       /*! PLLXTPRE = 1 => divide by 2 the HSE. */
-    SYSTEM_HSE_PRESCALER_MAX =  1
+    SYSTEM_HSE_PRESCALER_DIV1 =     0,
+    SYSTEM_HSE_PRESCALER_DIV2 =     1,  /*! PLLXTPRE = 1 => divide by 2 the HSE. */
+    SYSTEM_HSE_PRESCALER_DIVMAX =   1
 };
 
 /*! SYSCLK source selection values. */
@@ -63,16 +67,21 @@ enum
 /*! PLL prescaler values that can be used. */
 enum
 {
-    SYSTEM_PLL_PRESCALER_2 =    0, 
-    SYSTEM_PLL_PRESCALER_3 =    0b0001,       
-    SYSTEM_PLL_PRESCALER_4 =    0b0010, 
-    SYSTEM_PLL_PRESCALER_5 =    0b0011, 
-    SYSTEM_PLL_PRESCALER_6 =    0b0100, 
-    SYSTEM_PLL_PRESCALER_7 =    0b0101, 
-    SYSTEM_PLL_PRESCALER_8 =    0b0110, 
-    SYSTEM_PLL_PRESCALER_9 =    0b0111, 
-    SYSTEM_PLL_PRESCALER_MAX =  0b0111,
+    SYSTEM_PLL_PRESCALER_MUL2 =    0, 
+    SYSTEM_PLL_PRESCALER_MUL3 =    0x1, //0b0001 
+    SYSTEM_PLL_PRESCALER_MUL4 =    0x2, //0b0010 
+    SYSTEM_PLL_PRESCALER_MUL5 =    0x3, //0b0011 
+    SYSTEM_PLL_PRESCALER_MUL6 =    0x4, //0b0100 
+    SYSTEM_PLL_PRESCALER_MUL7 =    0x5, //0b0101 
+    SYSTEM_PLL_PRESCALER_MUL8 =    0x6, //0b0110 
+    SYSTEM_PLL_PRESCALER_MUL9 =    0x7, //0b0111 
+    SYSTEM_PLL_PRESCALER_MULMAX =  0x7  //0b0111
 };
+
+/*-- Private variables declaration -------------------------------------------*/
+uint32_t apb1_clk_freq_hz;
+uint32_t ahb_clk_freq_hz;
+uint32_t sysclk_clk_freq_hz;
 
 /*-- Private functions definition --------------------------------------------*/
 
@@ -101,11 +110,12 @@ static inline void system_config_flash_latency(uint8_t wait_states)
  * Use the field HPRE of the register CFGR of the RCC to config AHB 
  * prescaler. 
  *
- * @param prescaler prescaler used, see the enum SYSTEM_AHB_PRESCALER_x.
+ * @param prescaler prescaler used, see the enum SYSTEM_AHB_PRESCALER_DIVx.
  */
 static inline void system_config_ahb_prescaler(uint8_t prescaler)
 {
-	DEVMAP->RCC.REGs.CFGR  |= (prescaler << 4);
+    DEVMAP->RCC.REGs.CFGR &= ~(0xF << 4); // Clean bits 7:4 
+    DEVMAP->RCC.REGs.CFGR |= (prescaler << 4);
 }
 
 /**
@@ -113,11 +123,12 @@ static inline void system_config_ahb_prescaler(uint8_t prescaler)
  * Use the field PPRE1 of the register CFGR of the RCC to config APB1 
  * prescaler.
  *
- * @param prescaler prescaler used, see the enum SYSTEM_APB1_PRESCALER_x.
+ * @param prescaler prescaler used, see the enum SYSTEM_APB1_PRESCALER_DIV_x.
  */
 static inline void system_config_apb1_prescaler(uint8_t prescaler)
 {
-	DEVMAP->RCC.REGs.CFGR  |= (prescaler << 8);
+	DEVMAP->RCC.REGs.CFGR &= ~(0x7 << 8);
+	DEVMAP->RCC.REGs.CFGR |= (prescaler << 8);
 }
 
 /**
@@ -125,11 +136,12 @@ static inline void system_config_apb1_prescaler(uint8_t prescaler)
  * Use the field PLLXTPRE of the register CFGR of the RCC to config HSE
  * prescaler.
  *
- * @param prescaler prescaler used, see the enum SYSTEM_HSE_PRESCALER_x.
- */
+ * @param prescaler prescaler used, see the enum SYSTEM_HSE_PRESCALER_DIV_x.
+i */
 static inline void system_config_hse_prescaler(uint8_t prescaler)
 {
-	DEVMAP->RCC.REGs.CFGR  |= (prescaler << 17);
+    DEVMAP->RCC.REGs.CFGR &= ~(1 << 17); // clean PLLXTPRE
+    DEVMAP->RCC.REGs.CFGR |= (prescaler << 17); // set PLLXTPRE
 }
 
 /**
@@ -139,7 +151,7 @@ static inline void system_config_hse_prescaler(uint8_t prescaler)
  */
 static inline void system_enable_hse(void)
 {
-	DEVMAP->RCC.REGs.CR |= (1 << 16);	        // Enable HSE
+	DEVMAP->RCC.REGs.CR |=  (1 << 16);	        // Enable HSE
 	while (!(DEVMAP->RCC.REGs.CR & (1 << 17))); // Wait for HSE is locked
 }
 
@@ -175,10 +187,30 @@ static inline void system_select_sysclk_source(uint8_t source)
 void system_init(void)
 {
     system_config_flash_latency(SYSTEM_FLASH_2_WAIT_STATES);
-    system_config_hse_prescaler(SYSTEM_HSE_PRESCALER_1); 
-    system_config_ahb_prescaler(SYSTEM_AHB_PRESCALER_1);  
-    system_config_apb1_prescaler(SYSTEM_APB1_PRESCALER_2);	
+    system_config_hse_prescaler(SYSTEM_HSE_PRESCALER_DIV1); 
+    system_config_ahb_prescaler(SYSTEM_AHB_PRESCALER_DIV1);  
+    system_config_apb1_prescaler(SYSTEM_APB1_PRESCALER_DIV1);	
     system_enable_hse();
-    system_config_pll(SYSTEM_PLL_PRESCALER_9);
+    system_config_pll(SYSTEM_PLL_PRESCALER_MUL2);
     system_select_sysclk_source(SYSTEM_SYSCLK_SOURCE_SEL_PLL);
+
+    // update clock values to be used in other libs or apps
+    sysclk_clk_freq_hz = SYSTEM_EXT_OSC_FREQ_HZ * 2; 
+    ahb_clk_freq_hz = sysclk_clk_freq_hz;
+    apb1_clk_freq_hz = ahb_clk_freq_hz;
+}
+
+uint32_t system_get_sysclk_clk_freq_hz(void)
+{
+    return sysclk_clk_freq_hz;
+}
+
+uint32_t system_get_ahb_clk_freq_hz(void)
+{
+    return ahb_clk_freq_hz;
+}
+
+uint32_t system_get_apb1_clk_freq_hz(void)
+{
+    return apb1_clk_freq_hz;
 }

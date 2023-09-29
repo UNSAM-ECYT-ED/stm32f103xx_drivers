@@ -2,24 +2,20 @@
 #include "system.h"
 #include "gpio.h"
 
-#define USE_TIMER_DELAY
-
 #define BLUEPILL_LED_GPIO_PORT  GPIOC
 #define BLUEPILL_LED_GPIO_PIN   GPIO_PIN_13
 
-#define CPU_CLOCK_MHZ           (72u)
-#define APB1_CLOCK_MHZ          (36u)
-#define CYCLES_PER_ITERATION    (22u) 
 #define LED_TOGGLE_PERIOD_MS    (500)
 #define LED_TOGGLE_PERIOD_US    (LED_TOGGLE_PERIOD_MS*1000)
 
-#ifdef USE_TIMER_DELAY
 static void config_timer(uint32_t ms_period)
 {
+    uint32_t apb1_clk_freq_mhz = system_get_apb1_clk_freq_hz()/1000000;
+
     /* Enable TIMER2 clock. */
     DEVMAP->RCC.REGs.APB1ENR |= 0x1;
     /* Set the prescaler of the TIMER to have a 1kHz frequency in it. */
-    DEVMAP->TIMs[0].REGs.PSC = (APB1_CLOCK_MHZ*1000)-1;
+    DEVMAP->TIMs[0].REGs.PSC = (apb1_clk_freq_mhz*1000)-1;
     /* Set the auto-reload value to achieve the desired delay. 
      * Note: Remember that this value must be 16-bits wide. */
     DEVMAP->TIMs[0].REGs.ARR = ms_period -1;
@@ -40,17 +36,6 @@ static void timer_cpu_delay_us(void)
     /* Clear update flag. */
     DEVMAP->TIMs[0].REGs.SR &= ~(0x1);    
 }
-#else
-static void __attribute__((optimize("O0"))) busy_loop_cpu_delay_us(uint32_t us)
-{
-    int clock_cycles = ((CPU_CLOCK_MHZ * us) / CYCLES_PER_ITERATION);
-    int i;
-    for(i = clock_cycles; i > 0; i--)
-    {
-        asm("NOP");
-    }
-}
-#endif
 
 int main(void)
 {
@@ -59,9 +44,7 @@ int main(void)
     system_init();
     gpio_init();
 
-#ifdef USE_TIMER_DELAY
     config_timer(LED_TOGGLE_PERIOD_MS);
-#endif
 
     DEVMAP->GPIOs[BLUEPILL_LED_GPIO_PORT].REGs.CRH &= ~(0xf << 20); // clean
     DEVMAP->GPIOs[BLUEPILL_LED_GPIO_PORT].REGs.CRH |= (0x3 << 20);  // set
@@ -76,11 +59,7 @@ int main(void)
                 ((odr   & (1 << BLUEPILL_LED_GPIO_PIN)) << 16) | \
                 ((~odr  & (1 << BLUEPILL_LED_GPIO_PIN)) <<  0);
 
-#ifdef USE_TIMER_DELAY
         timer_cpu_delay_us();
-#else
-        busy_loop_cpu_delay_us(LED_TOGGLE_PERIOD_US);
-#endif
     }
 
     return 0;
