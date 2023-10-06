@@ -47,3 +47,18 @@ void uart_tx_blocking(char *tx_buff, uint32_t len);
  * @param[in] len quantity of bytes to receive.
  */
 void uart_rx_blocking(char *rx_buff, uint32_t len);
+
+/**
+ * Enable UART TX interrupt using TXEIE field of CR1 register.
+ */
+void uart_enable_tx_interrupt(void);
+
+/**
+ * Disable UART TX interrupt using TXEIE field of CR1 register.
+ */
+void uart_disable_tx_interrupt(void);
+
+/**
+ * Enable UART RX interrupt using RXNEIE field of CR1 register.
+ */
+void uart_enable_rx_interrupt(void);
