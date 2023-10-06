@@ -12,6 +12,7 @@
 #define SYSTEM_EXT_OSC_FREQ_HZ (8000000ul)    /* BluePill external oscillator. */
 
 /*-- Private types declaration -----------------------------------------------*/
+
 /*! Flash wait states that can be set. */
 enum
 {

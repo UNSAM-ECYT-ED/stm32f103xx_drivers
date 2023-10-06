@@ -18,6 +18,22 @@ else
 	NULL := /dev/null
 endif
 
+# Detect if we are in Windows or in Linux
+# Stuff about dir separators: http://skramm.blogspot.com/2013/04/writing-portable-makefiles.html 
+ifeq ($(OS),Windows_NT)
+	RMDIR := rd /s /q
+	MKDIR := mkdir
+	DS := \\
+	ODS := /
+	NULL := nul
+else
+	RMDIR := rm -rf
+	MKDIR := mkdir -p
+	DS := /
+	ODS := \\
+	NULL := /dev/null
+endif
+
 BUILD_DIR = build
 
 # Stuff to compile drivers static library
@@ -77,7 +93,7 @@ build: $(BUILD_DIR) $(TARGET).elf $(TARGET).hex $(TARGET).bin
 
 $(BUILD_DIR):
 	-$(MKDIR) $(BUILD_DIR) 2>$(NULL)
-
+  
 $(TARGET).elf: $(OBJS) $(DRIVERS_LIB)
 	@echo "Building application elf: "\
 		"$(addprefix $(BUILD_DIR)/, $(OBJS)) -> $(BUILD_DIR)/$@..."
