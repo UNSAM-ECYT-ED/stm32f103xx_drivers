@@ -28,6 +28,7 @@ __attribute__((weak)) void handler_usart1(void)
 __attribute__((weak)) int main(void)
 {
     asm("NOP");
+    return 0;
 }
 
 /*-- Public variables declaration --------------------------------------------*/

@@ -36,15 +36,15 @@ enum
     SYSTEM_AHB_PRESCALER_DIVMAX =  0xF, //0b1111
 };
 
-/*! APB1 prescaler values that can be used. */
+/*! APB prescaler values that can be used. */
 enum
 {
-    SYSTEM_APB1_PRESCALER_DIV1 =    0,
-    SYSTEM_APB1_PRESCALER_DIV2 =    0x4,    //0b100
-    SYSTEM_APB1_PRESCALER_DIV4 =    0x5,    //0b101
-    SYSTEM_APB1_PRESCALER_DIV8 =    0x6,    //0b110
-    SYSTEM_APB1_PRESCALER_DIV16 =   0x7,    //0b111
-    SYSTEM_APB1_PRESCALER_DIVMAX =  0x7     //0b111
+    SYSTEM_APB_PRESCALER_DIV1 =    0,
+    SYSTEM_APB_PRESCALER_DIV2 =    0x4,    //0b100
+    SYSTEM_APB_PRESCALER_DIV4 =    0x5,    //0b101
+    SYSTEM_APB_PRESCALER_DIV8 =    0x6,    //0b110
+    SYSTEM_APB_PRESCALER_DIV16 =   0x7,    //0b111
+    SYSTEM_APB_PRESCALER_DIVMAX =  0x7     //0b111
 };
 
 /*! HSE prescaler values that can be used. */
@@ -80,6 +80,7 @@ enum
 
 /*-- Private variables declaration -------------------------------------------*/
 uint32_t apb1_clk_freq_hz;
+uint32_t apb2_clk_freq_hz;
 uint32_t ahb_clk_freq_hz;
 uint32_t sysclk_clk_freq_hz;
 
@@ -123,12 +124,25 @@ static inline void system_config_ahb_prescaler(uint8_t prescaler)
  * Use the field PPRE1 of the register CFGR of the RCC to config APB1 
  * prescaler.
  *
- * @param prescaler prescaler used, see the enum SYSTEM_APB1_PRESCALER_DIV_x.
+ * @param prescaler prescaler used, see the enum SYSTEM_APB_PRESCALER_DIV_x.
  */
 static inline void system_config_apb1_prescaler(uint8_t prescaler)
 {
 	DEVMAP->RCC.REGs.CFGR &= ~(0x7 << 8);
 	DEVMAP->RCC.REGs.CFGR |= (prescaler << 8);
+}
+
+/**
+ * Configure APB2 clock prescaler.
+ * Use the field PPRE2 of the register CFGR of the RCC to config APB2 
+ * prescaler.
+ *
+ * @param prescaler prescaler used, see the enum SYSTEM_APB_PRESCALER_DIV_x.
+ */
+static inline void system_config_apb2_prescaler(uint8_t prescaler)
+{
+	DEVMAP->RCC.REGs.CFGR &= ~(0x7 << 11);
+	DEVMAP->RCC.REGs.CFGR |= (prescaler << 11);
 }
 
 /**
@@ -189,7 +203,8 @@ void system_init(void)
     system_config_flash_latency(SYSTEM_FLASH_2_WAIT_STATES);
     system_config_hse_prescaler(SYSTEM_HSE_PRESCALER_DIV1); 
     system_config_ahb_prescaler(SYSTEM_AHB_PRESCALER_DIV1);  
-    system_config_apb1_prescaler(SYSTEM_APB1_PRESCALER_DIV1);	
+    system_config_apb1_prescaler(SYSTEM_APB_PRESCALER_DIV1);	
+    system_config_apb2_prescaler(SYSTEM_APB_PRESCALER_DIV1);
     system_enable_hse();
     system_config_pll(SYSTEM_PLL_PRESCALER_MUL2);
     system_select_sysclk_source(SYSTEM_SYSCLK_SOURCE_SEL_PLL);
@@ -198,6 +213,7 @@ void system_init(void)
     sysclk_clk_freq_hz = SYSTEM_EXT_OSC_FREQ_HZ * 2; 
     ahb_clk_freq_hz = sysclk_clk_freq_hz;
     apb1_clk_freq_hz = ahb_clk_freq_hz;
+    apb2_clk_freq_hz = ahb_clk_freq_hz;
 }
 
 uint32_t system_get_sysclk_clk_freq_hz(void)
@@ -213,4 +229,9 @@ uint32_t system_get_ahb_clk_freq_hz(void)
 uint32_t system_get_apb1_clk_freq_hz(void)
 {
     return apb1_clk_freq_hz;
+}
+
+uint32_t system_get_apb2_clk_freq_hz(void)
+{
+    return apb2_clk_freq_hz;
 }

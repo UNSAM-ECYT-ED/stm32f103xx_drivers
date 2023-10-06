@@ -40,12 +40,16 @@ typedef enum
 {
     GPIO_PIN_CNF_OUTPUT_PP =    0u, /*! Push-pull. */
     GPIO_PIN_CNF_OUTPUT_OD =    1u, /*! Open-drain. */
+    AFIO_PIN_CNF_OUTPUT_PP =    2u, /*! Alternate function output push-pull. */
+    AFIO_PIN_CNF_OUTPUT_OD =    3u, /*! Alternate function output open-drain. */
 } GPIO_pin_cnf_output_t;
 
 typedef enum
 {
     GPIO_PIN_MODE_INPUT =           0u,
     GPIO_PIN_MODE_OUTPUT_10MHZ =    1u,
+    GPIO_PIN_MODE_OUTPUT_2MHZ =     2u,
+    GPIO_PIN_MODE_OUTPUT_50MHZ =    3u,
 } GPIO_pin_mode_t;
 
 /*-- Public functions declaration --------------------------------------------*/
