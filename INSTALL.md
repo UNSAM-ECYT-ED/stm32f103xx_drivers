@@ -83,6 +83,15 @@ Nota 2: Si la instalacion se cuelga en algun porcentaje, clickear la terminal y 
 
 5. **ST-LINK**: Para utilizar el programador del microcontrolador STM32 deben ser descargados los drivers para el mismo. Estos se encuentran en la pagina oficial de STMicroelectronics: https://www.st.com/en/development-tools/stsw-link004.html#get-software
 
+6. **Python**: Para comunicarse con el STM32 a traves del puerto serie, se debe instalar un paquete de python llamado "pyserial". Primero se debe instalar python descargando el instalador desde aqui: https://www.python.org/downloads/windows/.
+Tildar en la instalacion la opcion correspondiente para agregar python al PATH.
+
+7. **Py-serial**: Este es el paquete que necesitamos para comunicarnos a traves del puerto serie con el microcontrolador.
+Para instalarlo, ejecutar lo siguiente en una terminal:
+
+```
+ python -m ensurepip --upgrade
+```
 
 ## Instalacion en Linux :heart:
 

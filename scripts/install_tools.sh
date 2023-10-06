@@ -34,6 +34,7 @@ function install_arm_toolchain()
     ln -sf ${ARM_TOOLCHAIN_INSTALL_DIR}/${ARM_TOOLCHAIN_EXTRACT_DIR_NAME}/bin/arm-none-eabi-objcopy  ${HOME}/.local/bin/arm-none-eabi-objcopy
     ln -sf ${ARM_TOOLCHAIN_INSTALL_DIR}/${ARM_TOOLCHAIN_EXTRACT_DIR_NAME}/bin/arm-none-eabi-size     ${HOME}/.local/bin/arm-none-eabi-size
     ln -sf ${ARM_TOOLCHAIN_INSTALL_DIR}/${ARM_TOOLCHAIN_EXTRACT_DIR_NAME}/bin/arm-none-eabi-gdb      ${HOME}/.local/bin/arm-none-eabi-gdb
+    ln -sf ${ARM_TOOLCHAIN_INSTALL_DIR}/${ARM_TOOLCHAIN_EXTRACT_DIR_NAME}/bin/arm-none-eabi-ar       ${HOME}/.local/bin/arm-none-eabi-ar
 
     if grep -Fxq 'PATH=${HOME}/.local/bin:${PATH}' ${HOME}/.bashrc
     then

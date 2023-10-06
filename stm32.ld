@@ -19,9 +19,11 @@ SECTIONS {
 	} > SRAM AT > FLASH
 
 	.bss : {
-		. = ALIGN(4);
+        . = ALIGN(4);
 		*(.bss*)
 		*(COMMON)
 		. = ALIGN(4);
-	} > SRAM
+/* Define the start of the heap for newlib sbrk. */
+       end = . ;
+    } > SRAM
 }

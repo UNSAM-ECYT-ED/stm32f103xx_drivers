@@ -1,4 +1,22 @@
 TARGET ?= blink
+SERIAL_PORT ?= /dev/ttyUSB0
+SERIAL_BAUDRATE ?= 9600
+
+# Detect if we are in Windows or in Linux
+# Stuff about dir separators: http://skramm.blogspot.com/2013/04/writing-portable-makefiles.html 
+ifeq ($(OS),Windows_NT)
+	RMDIR := rd /s /q
+	MKDIR := mkdir
+	DS := \\
+	ODS := /
+	NULL := nul
+else
+	RMDIR := rm -rf
+	MKDIR := mkdir -p
+	DS := /
+	ODS := \\
+	NULL := /dev/null
+endif
 
 # Detect if we are in Windows or in Linux
 # Stuff about dir separators: http://skramm.blogspot.com/2013/04/writing-portable-makefiles.html 
@@ -51,9 +69,10 @@ CFLAGS += -ffunction-sections -fdata-sections
 
 LDFLAGS += -march=armv7-m
 LDFLAGS += -nostartfiles
-LDFLAGS += --specs=nosys.specs
+LDFLAGS += --specs=nosys.specs 	# define stub syscalls
 LDFLAGS += -Wl,--gc-sections # Linker garbage collector
 LDFLAGS += -T$(LINKER_SCRIPT)
+LDFLAGS += --specs=nano.specs	# use newlib.nano
 
 CROSS_COMPILE = arm-none-eabi-
 CC = $(CROSS_COMPILE)gcc
@@ -62,6 +81,7 @@ OBJDUMP = $(CROSS_COMPILE)objdump
 OBJCOPY = $(CROSS_COMPILE)objcopy
 SIZE = $(CROSS_COMPILE)size
 DBG = $(CROSS_COMPILE)gdb
+AR = $(CROSS_COMPILE)ar
 
 .PHONY: all build build_lib size clean flash debug ocd-start
 
@@ -73,21 +93,23 @@ build: $(BUILD_DIR) $(TARGET).elf $(TARGET).hex $(TARGET).bin
 
 $(BUILD_DIR):
 	-$(MKDIR) $(BUILD_DIR) 2>$(NULL)
-
+  
 $(TARGET).elf: $(OBJS) $(DRIVERS_LIB)
 	@echo "Building application elf: "\
 		"$(addprefix $(BUILD_DIR)/, $(OBJS)) -> $(BUILD_DIR)/$@..."
 	-$(MKDIR) $(BUILD_DIR)$(DS)$(TARGET) 2>$(NULL)
-	$(CC) $(addprefix $(BUILD_DIR)/, $(OBJS)) $(LDFLAGS) $(INCLUDES) \
-		-o $(BUILD_DIR)/$(TARGET)/$@ \
-		$(BUILD_DIR)/$(DRIVERS_LIB)
+	$(CC) -o $(BUILD_DIR)/$(TARGET)/$@ \
+		$(addprefix $(BUILD_DIR)/, $(OBJS)) \
+		-L$(BUILD_DIR) -l:$(DRIVERS_LIB) \
+		$(INCLUDES) \
+		$(LDFLAGS)
 
 ## Library
 build_drivers: $(DRIVERS_LIB)
 
 $(DRIVERS_LIB): $(DRIVERS_OBJ)
 	@echo "Building static library with the drivers ($<)..."
-	ar rcs $(BUILD_DIR)/$(DRIVERS_LIB) \
+	$(AR) rcs $(BUILD_DIR)/$(DRIVERS_LIB) \
 		$(addprefix $(BUILD_DIR)/, $(DRIVERS_OBJ))
 
 ## Auto-rules to compile stuff
@@ -127,3 +149,6 @@ disassembly:
 clean:
 	@echo "Cleaning..."
 	-$(RMDIR) $(BUILD_DIR) 2>$(NULL)
+
+serial:
+	python -m serial.tools.miniterm $(SERIAL_PORT) $(BAUDRATE)

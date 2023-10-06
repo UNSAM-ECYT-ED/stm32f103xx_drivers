@@ -5,17 +5,19 @@
 #define BLUEPILL_LED_GPIO_PORT  GPIOC
 #define BLUEPILL_LED_GPIO_PIN   GPIO_PIN_13
 
-#define LED_TOGGLE_PERIOD_MS    (500)
+#define LED_TOGGLE_PERIOD_MS    (10000)
 #define LED_TOGGLE_PERIOD_US    (LED_TOGGLE_PERIOD_MS*1000)
 
 static void config_timer(uint32_t ms_period)
 {
-    uint32_t apb1_clk_freq_mhz = system_get_apb1_clk_freq_hz()/1000000;
+    // Because we are using a prescaler of 2 in the APB1 bus,
+    // the frequency of the timer is APB1_clk x 2
+    uint32_t tim2_clk_freq_mhz = (system_get_apb1_clk_freq_hz() * 2)/1000000;
 
     /* Enable TIMER2 clock. */
     DEVMAP->RCC.REGs.APB1ENR |= 0x1;
     /* Set the prescaler of the TIMER to have a 1kHz frequency in it. */
-    DEVMAP->TIMs[0].REGs.PSC = (apb1_clk_freq_mhz*1000)-1;
+    DEVMAP->TIMs[0].REGs.PSC = (tim2_clk_freq_mhz*1000)-1;
     /* Set the auto-reload value to achieve the desired delay. 
      * Note: Remember that this value must be 16-bits wide. */
     DEVMAP->TIMs[0].REGs.ARR = ms_period -1;
@@ -43,7 +45,6 @@ int main(void)
 
     system_init();
     gpio_init();
-
     config_timer(LED_TOGGLE_PERIOD_MS);
 
     DEVMAP->GPIOs[BLUEPILL_LED_GPIO_PORT].REGs.CRH &= ~(0xf << 20); // clean

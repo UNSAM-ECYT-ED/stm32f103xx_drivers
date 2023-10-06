@@ -7,18 +7,34 @@
  */
 
 
+/*-- Macros and constants ----------------------------------------------------*/
+
 /*-- Public functions declaration --------------------------------------------*/
 /**
  * Initialize STM32F103 clocks. 
  * Supposing a base HSE frequency f_hse, the final frequencies of the clocks are:
- * 1) SYSCLK = f_hse * 9
- * 2) AHB = f_hse * 9 
- * 3) APB1 = f_hse * 4.5
+ * 1) SYSCLK = f_hse * 2
+ * 2) AHB = f_hse * 1
+ * 3) APB1 = f_hse * 1
+ * 4) APB2 = f_hse * 1
  *
  * For example, in BluePill (which has an external oscillator of 8 MHz), the 
  * frequencies are:
- * 1) SYSCLK = 72 MHz (max frequency that can run the processor)
- * 2) AHB = 72 MHz
- * 3) APB1 = 36 MHz 
+ * 1) SYSCLK = 16 MHz
+ * 2) AHB = 16 MHz
+ * 3) APB1 = 16 MHz
+ * 4) APB2 = 16 MHz 
  */
 void system_init(void);
+
+/* Get SYSCLK clock frequency in Hz. */
+uint32_t system_get_sysclk_clk_freq_hz(void);
+
+/* Get AHB clock frequency in Hz. */
+uint32_t system_get_ahb_clk_freq_hz(void);
+
+/* Get APB1 clock frequency in Hz. */
+uint32_t system_get_apb1_clk_freq_hz(void);
+
+/* Get APB2 clock frequency in Hz. */
+uint32_t system_get_apb2_clk_freq_hz(void);
