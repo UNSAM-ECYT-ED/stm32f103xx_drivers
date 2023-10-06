@@ -135,4 +135,4 @@ clean:
 	-$(RMDIR) $(BUILD_DIR) 2>$(NULL)
 
 serial:
-	python3 -m serial.tools.miniterm $(SERIAL_PORT) $(BAUDRATE)
+	python -m serial.tools.miniterm $(SERIAL_PORT) $(BAUDRATE)
