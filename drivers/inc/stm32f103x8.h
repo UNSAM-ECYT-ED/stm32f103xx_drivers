@@ -38,7 +38,7 @@ enum {GPIOA = 0, GPIOB = 1, GPIOC = 2, GPIOD = 3, GPIOE = 4, GPIOF = 5 };
 enum {DMA1	= 0 };
 enum {CHN1	= 0, CHN2  = 1, CHN3  = 2, CHN4  = 3, CHN5	= 4, CHN6  = 5, 
     CHN7 = 6, CHN8 = 7 };
-enum {ADC1	= 0 };
+enum {ADC1	= 0, ADC2 = 1};
 
 /*! MCU memory map. */
 typedef struct {
