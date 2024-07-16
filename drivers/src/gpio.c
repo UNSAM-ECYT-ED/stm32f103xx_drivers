@@ -18,7 +18,7 @@ void gpio_init(void)
 }
 
 void gpio_config_output(uint8_t gpio_port, GPIO_pin_number_t pin, 
-        GPIO_pin_cnf_output_t config, GPIO_pin_mode_t mode)
+        GPIO_pin_cnf_t config, GPIO_pin_mode_t mode)
 {
     // Note: Students must implement this
     asm("NOP");
